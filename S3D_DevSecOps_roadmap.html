@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Made by Saad — DevSecOps Learning Path</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaff; --surface:#ffffff; --ink:#1c1630; --ink-soft:#6c6585;
+  --accent:#7c3aed; --accent-2:#a855f7; --accent-3:#c084fc; --accent-soft:#f3ecfe;
+  --sec:#b45309; --sec-soft:#fdf3e6;
+  --ai:#0ea5a3; --ai-soft:#e4f7f6;
+  --ok:#16a34a; --line:#ece7f7;
+  --font:'Tajawal',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.75;font-size:16px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.grid-bg{background-image:linear-gradient(rgba(124,58,237,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.035) 1px,transparent 1px);background-size:44px 44px}
+.blob{position:fixed;border-radius:9999px;filter:blur(90px);pointer-events:none;z-index:0}
+.blob-a{width:520px;height:520px;background:rgba(168,85,247,.20);top:-180px;right:-160px;animation:driftA 20s ease-in-out infinite}
+.blob-b{width:560px;height:560px;background:rgba(124,58,237,.14);top:40%;left:-220px;animation:driftB 24s ease-in-out infinite}
+@keyframes driftA{0%,100%{transform:translate(0,0)}50%{transform:translate(-110px,70px)}}
+@keyframes driftB{0%,100%{transform:translate(0,0)}50%{transform:translate(90px,60px)}}
+#progress{position:fixed;top:0;inset-inline:0;height:3px;z-index:60;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--accent),var(--accent-3))}
+#hdr{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.78);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid var(--line)}
+.hdr-in{max-width:880px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px}
+.badge-sk{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:.8rem;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 16px -6px rgba(124,58,237,.6)}
+.hdr-t{font-weight:800;font-size:.95rem;letter-spacing:-.01em}
+.hdr-mini{margin-inline-start:auto;font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);background:var(--accent-soft);padding:4px 10px;border-radius:8px;white-space:nowrap}
+.wrap{max-width:880px;margin:0 auto;padding:30px 18px 90px;position:relative;z-index:1}
+h1,h2,h3{font-family:var(--font);text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:2rem;font-weight:900;letter-spacing:-.02em;margin-bottom:6px}
+.grad-text{background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3),var(--accent));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 9s linear infinite}
+@keyframes shimmer{to{background-position:300% 0}}
+.sub{color:var(--ink-soft);margin:0 0 20px;font-size:.98rem;max-width:62ch}
+.assume{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:.9rem;color:var(--ink-soft);margin-bottom:20px;box-shadow:0 10px 30px -22px rgba(28,22,48,.5)}
+.assume strong{color:var(--ink)}
+
+/* cockpit */
+.cockpit{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:24px;box-shadow:0 16px 44px -26px rgba(124,58,237,.5);position:sticky;top:66px;z-index:25}
+.cockpit .ctop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.cockpit .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent)}
+.bar{height:9px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:9px}
+.bar>span{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-3));transition:width .4s cubic-bezier(.16,1,.3,1)}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.cbox{background:linear-gradient(135deg,var(--accent-soft),#fff);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:.84rem}
+.cbox .lbl{font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:3px}
+.cbox .val{font-weight:700;font-size:.92rem}
+.cbox .val small{font-weight:500;color:var(--ink-soft)}
+.cbtn{cursor:pointer;border:none;background:var(--accent);color:#fff;font-family:var(--font);font-weight:700;font-size:.78rem;padding:5px 12px;border-radius:9px;margin-top:7px;transition:filter .2s}
+.cbtn:hover{filter:brightness(1.08)}
+.cbtn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);padding:4px 10px}
+.ctrl{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:6px;font-size:.78rem}
+.ctrl input{font-family:var(--mono);border:1px solid var(--line);border-radius:8px;padding:4px 7px;font-size:.78rem;background:#fff;color:var(--ink);width:72px}
+.ctrl input[type=date]{width:auto}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.phase{margin:36px 0 10px;scroll-margin-top:150px}
+.phase.current{position:relative}
+.phase.current::before{content:'📍 أنت هنا';position:absolute;inset-inline-start:0;top:-22px;font-family:var(--mono);font-size:.68rem;color:#fff;background:var(--accent);padding:2px 9px;border-radius:7px}
+.phase.current .phase-why{box-shadow:0 0 0 2px var(--accent),0 10px 30px -22px rgba(124,58,237,.6)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.vis{opacity:1;transform:none}
+.phase-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.phase-num{font-family:var(--mono);font-weight:600;font-size:.76rem;background:var(--accent-soft);color:var(--accent);border-radius:9px;padding:5px 11px;white-space:nowrap}
+.phase.sec-theme .phase-num{background:var(--sec-soft);color:var(--sec)}
+.phase.ai-theme .phase-num{background:var(--ai-soft);color:var(--ai)}
+.phase h2{font-size:1.4rem;font-weight:800;letter-spacing:-.01em}
+.here-btn{margin-inline-start:auto;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink-soft);font-family:var(--font);font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:8px;transition:all .2s}
+.here-btn:hover{border-color:var(--accent);color:var(--accent)}
+.phase.current .here-btn{background:var(--accent);color:#fff;border-color:var(--accent)}
+.phase-meta{color:var(--ink-soft);font-size:.85rem;margin:5px 0 2px;font-family:var(--mono)}
+.phase-why{background:var(--surface);border-inline-start:4px solid var(--accent);border-radius:12px;padding:13px 17px;margin:12px 0 14px;font-size:.93rem;box-shadow:0 10px 30px -24px rgba(28,22,48,.55)}
+.phase.sec-theme .phase-why{border-inline-start-color:var(--sec)}
+.phase.ai-theme .phase-why{border-inline-start-color:var(--ai)}
+.traps{background:#fffaf2;border:1px solid #f3e4cf;border-radius:12px;padding:11px 15px;margin:0 0 16px;font-size:.87rem}
+.traps .th{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--sec);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.traps ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.traps li{padding-inline-start:16px;position:relative;color:#7a5a2e}
+.traps li::before{content:'⚠';position:absolute;inset-inline-start:0;font-size:.72rem}
+.pbar{display:flex;align-items:center;gap:10px;margin-top:6px}
+.pbar .bar{flex:1;margin-top:0}
+.pbar .pct{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--ink-soft);min-width:44px}
+
+.topic{position:relative;isolation:isolate;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:14px 0;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s,border-color .5s,opacity .3s;box-shadow:0 12px 34px -26px rgba(28,22,48,.5);scroll-margin-top:150px}
+.topic::before{content:'';position:absolute;inset:0;border-radius:inherit;z-index:-1;opacity:0;transition:opacity .4s;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(124,58,237,.10),transparent 60%)}
+.topic:hover{transform:translateY(-5px);border-color:rgba(124,58,237,.4);box-shadow:0 26px 60px -28px rgba(124,58,237,.5)}
+.topic:hover::before{opacity:1}
+.phase.sec-theme .topic::before{background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(180,83,9,.10),transparent 60%)}
+.phase.sec-theme .topic:hover{border-color:rgba(180,83,9,.4)}
+.phase.ai-theme .topic::before{background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(14,165,163,.10),transparent 60%)}
+.phase.ai-theme .topic:hover{border-color:rgba(14,165,163,.4)}
+body.filter-left .topic.alldone{display:none}
+.topic .thead{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.topic h3{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.topic .time{font-size:.76rem;color:var(--ink-soft);font-family:var(--mono)}
+.logos{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
+.logo{width:30px;height:30px;border-radius:9px;background:#eef0f6;border:1px solid var(--line);display:grid;place-items:center;padding:5px}
+.logo svg{width:100%;height:100%;display:block}
+.logo.aws{font-family:var(--mono);font-weight:700;font-size:.62rem;color:#ff9900;letter-spacing:-.02em}
+.goal{margin:10px 0 6px;font-size:.93rem}
+label.chk{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:10px;cursor:pointer;font-size:.92rem;transition:background .2s}
+label.chk:hover{background:var(--accent-soft)}
+label.chk input{margin-top:5px;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
+label.chk.done{color:var(--ink-soft);text-decoration:line-through}
+.res{margin-top:12px;border-top:1px dashed var(--line);padding-top:11px}
+.res-title{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:7px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em}
+.res ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.res li{font-size:.9rem;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.tag{font-size:.66rem;font-weight:700;border-radius:7px;padding:2px 9px;white-space:nowrap;font-family:var(--mono)}
+.tag.ar{background:var(--sec-soft);color:var(--sec)}
+.tag.en{background:var(--accent-soft);color:var(--accent)}
+.tag.paid{background:var(--line);color:var(--ink-soft)}
+a{color:var(--accent);text-decoration:none;font-weight:500;transition:color .2s}
+.phase.sec-theme a{color:var(--sec)} .phase.ai-theme a{color:var(--ai)}
+a:hover{text-decoration:underline}
+a:focus-visible,label.chk:focus-within,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.proj{margin-top:12px;background:linear-gradient(135deg,var(--accent-soft),#fff);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:.9rem}
+.phase.sec-theme .proj{background:linear-gradient(135deg,var(--sec-soft),#fff)}
+.phase.ai-theme .proj{background:linear-gradient(135deg,var(--ai-soft),#fff)}
+.proj b{display:block;font-size:.76rem;margin-bottom:2px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
+.repo{display:flex;gap:7px;align-items:center;margin-top:9px}
+.repo input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:.8rem;font-family:var(--mono);background:#fff;color:var(--ink)}
+.repo a{font-size:.75rem;font-weight:700;white-space:nowrap}
+.notes{margin-top:10px}
+.notes summary{cursor:pointer;font-size:.78rem;font-family:var(--mono);color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:6px}
+.notes summary::-webkit-details-marker{display:none}
+.notes summary::before{content:'✎';color:var(--accent)}
+.notes textarea{width:100%;margin-top:7px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-family:var(--font);font-size:.86rem;background:#fff;color:var(--ink);min-height:62px;resize:vertical;line-height:1.6}
+.note{font-size:.85rem;color:var(--ink-soft);margin-top:8px}
+
+/* salary ladder */
+.ladder{margin-top:44px}
+.ladder h2{font-size:1.3rem;margin-bottom:4px}
+.ladder .cap{color:var(--ink-soft);font-size:.86rem;margin-bottom:14px}
+.rungs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rung{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:0 12px 30px -24px rgba(28,22,48,.5)}
+.rung .step{font-family:var(--mono);font-size:.66rem;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.rung h3{font-size:1rem;font-weight:800;margin:3px 0 8px}
+.rung .pay{font-size:.82rem;margin-bottom:3px}
+.rung .pay b{color:var(--ink)}
+.rung .pay span{color:var(--ink-soft);font-family:var(--mono);font-size:.78rem}
+.rung .when{font-size:.78rem;color:var(--ink-soft);margin-top:7px;border-top:1px dashed var(--line);padding-top:7px}
+
+/* readiness */
+.ready{margin-top:40px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:0 14px 40px -28px rgba(28,22,48,.5)}
+.ready h2{font-size:1.25rem;margin-bottom:4px}
+.ready .cap{color:var(--ink-soft);font-size:.86rem;margin-bottom:10px}
+.ready label{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:10px;cursor:pointer;font-size:.9rem;transition:background .2s}
+.ready label:hover{background:var(--accent-soft)}
+.ready label.done{color:var(--ink-soft);text-decoration:line-through}
+.ready input{margin-top:5px;accent-color:var(--ok);width:16px;height:16px;flex-shrink:0}
+
+.tips{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-top:40px;box-shadow:0 14px 40px -28px rgba(28,22,48,.5)}
+.tips h2{font-size:1.3rem;margin-bottom:10px}
+.tips ul{margin:0;padding:0;list-style:none}
+.tips li{margin-bottom:9px;font-size:.93rem;padding-inline-start:20px;position:relative}
+.tips li::before{content:'';position:absolute;inset-inline-start:0;top:11px;width:8px;height:8px;border-radius:3px;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+.tips b{color:var(--ink)}
+footer{margin-top:44px;color:var(--ink-soft);font-size:.82rem;text-align:center}
+footer .sig{font-family:var(--mono);color:var(--accent);font-weight:600}
+@media (max-width:620px){ .cgrid{grid-template-columns:1fr} .rungs{grid-template-columns:1fr} }
+@media (max-width:480px){ h1{font-size:1.6rem} .topic{padding:15px} .wrap{padding:22px 13px 70px} .cockpit{top:60px} }
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition-duration:.001ms!important} .reveal{opacity:1;transform:none} }
+</style>
+</head>
+<body class="grid-bg">
+<div class="blob blob-a"></div>
+<div class="blob blob-b"></div>
+<div id="progress"></div>
+
+<header id="hdr">
+  <div class="hdr-in">
+    <span class="badge-sk">SK</span>
+    <span class="hdr-t">DevSecOps <span class="grad-text">Learning Path</span></span>
+    <span class="hdr-mini" id="hdrPct">0%</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>DevSecOps <span class="grad-text">Learning Path</span></h1>
+<p class="sub">خريطة طريق كاملة مبنية على خبرتك في الـ Software Testing. كل توبيك فيه: لوجو الأدوات، هدف الدخول، مهارات الخروج (بتتحفظ تلقائياً)، مصادر عربي وإنجليزي، مشروع عملي بخانة لرابط الريبو، وملاحظاتك الخاصة.</p>
+
+<div class="assume">
+<strong>مبنية على:</strong> 10–15 ساعة/أسبوع ≈ <strong>9 شهور</strong> (الواقعي ~12 شهر مع الكلية والشغل) • أسلوب: <strong>Bootcamp أولاً ثم تعميق</strong> • القاعدة: <strong>العربي للفهم الأول، والإنجليزي هو الأساس</strong>.
+</div>
+
+<!-- COCKPIT -->
+<div class="cockpit">
+  <div class="ctop">
+    <strong>تقدمك الكلي</strong>
+    <span class="num"><span id="totDone">0</span> / <span id="totAll">0</span> مهارة</span>
+  </div>
+  <div class="bar"><span id="totBar"></span></div>
+  <div class="cgrid">
+    <div class="cbox">
+      <div class="lbl">خطوتك الجاية</div>
+      <div class="val" id="nextTxt">—</div>
+      <button class="cbtn" id="nextBtn">روح لها ←</button>
+    </div>
+    <div class="cbox">
+      <div class="lbl">الوقت المتبقي</div>
+      <div class="val" id="hoursTxt">—</div>
+      <div class="ctrl">
+        <span>ساعات/أسبوع</span><input type="number" id="hpw" min="1" max="60" value="12">
+        <span>البداية</span><input type="date" id="startDate">
+      </div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <button class="cbtn ghost" id="filterBtn">👁 وريني اللي فاضل بس</button>
+    <button class="cbtn ghost" id="continueBtn">📍 كمّل من مكانك</button>
+    <button class="cbtn ghost" id="resetBtn">↺ Reset التقدّم</button>
+  </div>
+</div>
+
+<div id="phases"></div>
+
+<!-- SALARY LADDER -->
+<section class="ladder reveal">
+  <h2>سلّم الأدوار والرواتب</h2>
+  <p class="cap">أرقام تقديرية لـ 2026 وبتفرق كتير حسب الشركة والخبرة والمدينة — الهدف إنك تشوف الطريق، مش أرقام مضمونة. الشغل remote أو برا بيكون أعلى.</p>
+  <div class="rungs">
+    <div class="rung">
+      <div class="step">باب الدخول</div>
+      <h3>SDET / QA Automation</h3>
+      <div class="pay"><b>مصر:</b> <span>~15–35k ج.م/شهر</span></div>
+      <div class="pay"><b>الخليج:</b> <span>~1.5–3k $/شهر</span></div>
+      <div class="when">دلوقتي — انت واقف على بابها بخبرة الـ testing</div>
+    </div>
+    <div class="rung">
+      <div class="step">بعد سنة-سنتين</div>
+      <h3>DevOps Engineer</h3>
+      <div class="pay"><b>مصر:</b> <span>~35–70k ج.م/شهر</span></div>
+      <div class="pay"><b>الخليج:</b> <span>~3–6k $/شهر</span></div>
+      <div class="when">بعد ما تاخد ownership للـ pipelines في الشغل</div>
+    </div>
+    <div class="rung">
+      <div class="step">الهدف</div>
+      <h3>DevSecOps / Senior</h3>
+      <div class="pay"><b>مصر:</b> <span>~70–120k+ ج.م/شهر</span></div>
+      <div class="pay"><b>الخليج:</b> <span>~5–9k+ $/شهر</span></div>
+      <div class="when">بخبرة security حقيقية — الطلب عليها أعلى والعرض أقل</div>
+    </div>
+  </div>
+</section>
+
+<!-- READINESS -->
+<section class="ready reveal">
+  <h2>checklist جاهزية السوق</h2>
+  <p class="cap">قبل ما تقدّم على أول وظيفة SDET / DevOps، دول لازم يكونوا جاهزين:</p>
+  <div id="readyList"></div>
+</section>
+
+<div class="tips reveal">
+<h2>قواعد الطريق (ارجعلها كل شهر)</h2>
+<ul>
+<li><b>مشاريع مش شهادات.</b> الـ recruiter بيفتح GitHub قبل قائمة الكورسات. كل مرحلة لازم تخرج منها بـ repo موثق.</li>
+<li><b>فيديو ساعة = ساعة تطبيق.</b> لو مش بتكتب الـ commands بإيدك، انت بتتفرج مش بتتعلم.</li>
+<li><b>خبرة التستنج ميزتك.</b> قوّيها في اتجاه SDET (automation + API + CI) — ده نفسه بداية طريق الـ DevOps.</li>
+<li><b>باب الدخول SDET / QA Automation</b> مش "Junior DevOps" مباشرة. التحول بيحصل جوه الشغل بعد سنة-سنتين.</li>
+<li><b>أداة واحدة من كل فئة:</b> GitHub Actions قبل Jenkins، AWS بس، Docker بس.</li>
+<li><b>وثّق رحلتك على LinkedIn</b> بوست إنجليزي قصير بعد كل مشروع.</li>
+<li><b>الشهادات اللي تستاهل فلوس:</b> AWS SAA ثم CKA. الباقي المجاني بيكفي.</li>
+</ul>
+</div>
+
+<footer><span class="sig">صُنع بواسطة سعد</span></footer>
+</div>
+
+<script>
+const ICONS={"linux":{"title":"Linux","hex":"FCC624","d":"M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139zm.529 3.405h.013c.213 0 .396.062.584.198.19.135.33.332.438.533.105.259.158.459.166.724 0-.02.006-.04.006-.06v.105a.086.086 0 01-.004-.021l-.004-.024a1.807 1.807 0 01-.15.706.953.953 0 01-.213.335.71.71 0 00-.088-.042c-.104-.045-.198-.064-.284-.133a1.312 1.312 0 00-.22-.066c.05-.06.146-.133.183-.198.053-.128.082-.264.088-.402v-.02a1.21 1.21 0 00-.061-.4c-.045-.134-.101-.2-.183-.333-.084-.066-.167-.132-.267-.132h-.016c-.093 0-.176.03-.262.132a.8.8 0 00-.205.334 1.18 1.18 0 00-.09.4v.019c.002.089.008.179.02.267-.193-.067-.438-.135-.607-.202a1.635 1.635 0 01-.018-.2v-.02a1.772 1.772 0 01.15-.768c.082-.22.232-.406.43-.533a.985.985 0 01.594-.2zm-2.962.059h.036c.142 0 .27.048.399.135.146.129.264.288.344.465.09.199.14.4.153.667v.004c.007.134.006.2-.002.266v.08c-.03.007-.056.018-.083.024-.152.055-.274.135-.393.2.012-.09.013-.18.003-.267v-.015c-.012-.133-.04-.2-.082-.333a.613.613 0 00-.166-.267.248.248 0 00-.183-.064h-.021c-.071.006-.13.04-.186.132a.552.552 0 00-.12.27.944.944 0 00-.023.33v.015c.012.135.037.2.08.334.046.134.098.2.166.268.01.009.02.018.034.024-.07.057-.117.07-.176.136a.304.304 0 01-.131.068 2.62 2.62 0 01-.275-.402 1.772 1.772 0 01-.155-.667 1.759 1.759 0 01.08-.668 1.43 1.43 0 01.283-.535c.128-.133.26-.2.418-.2zm1.37 1.706c.332 0 .733.065 1.216.399.293.2.523.269 1.052.468h.003c.255.136.405.266.478.399v-.131a.571.571 0 01.016.47c-.123.31-.516.643-1.063.842v.002c-.268.135-.501.333-.775.465-.276.135-.588.292-1.012.267a1.139 1.139 0 01-.448-.067 3.566 3.566 0 01-.322-.198c-.195-.135-.363-.332-.612-.465v-.005h-.005c-.4-.246-.616-.512-.686-.71-.07-.268-.005-.47.193-.6.224-.135.38-.271.483-.336.104-.074.143-.102.176-.131h.002v-.003c.169-.202.436-.47.839-.601.139-.036.294-.065.466-.065zm2.8 2.142c.358 1.417 1.196 3.475 1.735 4.473.286.534.855 1.659 1.102 3.024.156-.005.33.018.513.064.646-1.671-.546-3.467-1.089-3.966-.22-.2-.232-.335-.123-.335.59.534 1.365 1.572 1.646 2.757.13.535.16 1.104.021 1.67.067.028.135.06.205.067 1.032.534 1.413.938 1.23 1.537v-.043c-.06-.003-.12 0-.18 0h-.016c.151-.467-.182-.825-1.065-1.224-.915-.4-1.646-.336-1.77.465-.008.043-.013.066-.018.135-.068.023-.139.053-.209.064-.43.268-.662.669-.793 1.187-.13.533-.17 1.156-.205 1.869v.003c-.02.334-.17.838-.319 1.35-1.5 1.072-3.58 1.538-5.348.334a2.645 2.645 0 00-.402-.533 1.45 1.45 0 00-.275-.333c.182 0 .338-.03.465-.067a.615.615 0 00.314-.334c.108-.267 0-.697-.345-1.163-.345-.467-.931-.995-1.788-1.521-.63-.4-.986-.87-1.15-1.396-.165-.534-.143-1.085-.015-1.645.245-1.07.873-2.11 1.274-2.763.107-.065.037.135-.408.974-.396.751-1.14 2.497-.122 3.854a8.123 8.123 0 01.647-2.876c.564-1.278 1.743-3.504 1.836-5.268.048.036.217.135.289.202.218.133.38.333.59.465.21.201.477.335.876.335.039.003.075.006.11.006.412 0 .73-.134.997-.268.29-.134.52-.334.74-.4h.005c.467-.135.835-.402 1.044-.7zm2.185 8.958c.037.6.343 1.245.882 1.377.588.134 1.434-.333 1.791-.765l.211-.01c.315-.007.577.01.847.268l.003.003c.208.199.305.53.391.876.085.4.154.78.409 1.066.486.527.645.906.636 1.14l.003-.007v.018l-.003-.012c-.015.262-.185.396-.498.595-.63.401-1.746.712-2.457 1.57-.618.737-1.37 1.14-2.036 1.191-.664.053-1.237-.2-1.574-.898l-.005-.003c-.21-.4-.12-1.025.056-1.69.176-.668.428-1.344.463-1.897.037-.714.076-1.335.195-1.814.12-.465.308-.797.641-.984l.045-.022zm-10.814.049h.01c.053 0 .105.005.157.014.376.055.706.333 1.023.752l.91 1.664.003.003c.243.533.754 1.064 1.189 1.637.434.598.77 1.131.729 1.57v.006c-.057.744-.48 1.148-1.125 1.294-.645.135-1.52.002-2.395-.464-.968-.536-2.118-.469-2.857-.602-.369-.066-.61-.2-.723-.4-.11-.2-.113-.602.123-1.23v-.004l.002-.003c.117-.334.03-.752-.027-1.118-.055-.401-.083-.71.043-.94.16-.334.396-.4.69-.533.294-.135.64-.202.915-.47h.002v-.002c.256-.268.445-.601.668-.838.19-.201.38-.336.663-.336zm7.159-9.074c-.435.201-.945.535-1.488.535-.542 0-.97-.267-1.28-.466-.154-.134-.28-.268-.373-.335-.164-.134-.144-.333-.074-.333.109.016.129.134.199.2.096.066.215.2.36.333.292.2.68.467 1.167.467.485 0 1.053-.267 1.398-.466.195-.135.445-.334.648-.467.156-.136.149-.267.279-.267.128.016.034.134-.147.332a8.097 8.097 0 01-.69.468zm-1.082-1.583V5.64c-.006-.02.013-.042.029-.05.074-.043.18-.027.26.004.063 0 .16.067.15.135-.006.049-.085.066-.135.066-.055 0-.092-.043-.141-.068-.052-.018-.146-.008-.163-.065zm-.551 0c-.02.058-.113.049-.166.066-.047.025-.086.068-.14.068-.05 0-.13-.02-.136-.068-.01-.066.088-.133.15-.133.08-.031.184-.047.259-.005.019.009.036.03.03.05v.02h.003z"},"git":{"title":"Git","hex":"F03C2E","d":"M13.09 23.549a1.54 1.54 0 0 1-2.18 0L.451 13.089a1.54 1.54 0 0 1 0-2.179l7.191-7.19 2.733 2.733a1.85 1.85 0 0 0 .964 2.326v6.66a1.849 1.849 0 1 0 1.54 0V8.957l2.508 2.508a1.85 1.85 0 1 0 1.09-1.09l-2.634-2.634a1.85 1.85 0 0 0-2.378-2.377L8.73 2.63 10.91.451a1.54 1.54 0 0 1 2.179 0l10.459 10.46a1.54 1.54 0 0 1 0 2.179z"},"github":{"title":"GitHub","hex":"181717","d":"M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"},"python":{"title":"Python","hex":"3776AB","d":"M11.858 0c-.978.005-1.913.088-2.736.234C6.7.662 6.26 1.558 6.26 3.21v2.182h5.725v.727H4.111c-1.664 0-3.121 1-3.577 2.903-.526 2.181-.549 3.542 0 5.82.407 1.694 1.379 2.902 3.043 2.902h1.969v-2.616c0-1.89 1.635-3.557 3.576-3.557h5.72c1.591 0 2.862-1.31 2.862-2.91v-5.45c0-1.553-1.309-2.718-2.863-2.977A18 18 0 0 0 11.858 0M8.762 1.755c.591 0 1.074.491 1.074 1.095 0 .601-.483 1.087-1.074 1.087A1.08 1.08 0 0 1 7.688 2.85c0-.604.48-1.095 1.074-1.095m9.656 4.364v2.543c0 1.971-1.671 3.63-3.577 3.63H9.122c-1.566 0-2.862 1.34-2.862 2.91v5.452c0 1.551 1.349 2.464 2.862 2.91 1.813.532 3.55.628 5.72 0 1.44-.418 2.862-1.258 2.862-2.91V18.47h-5.719v-.727h8.582c1.664 0 2.284-1.16 2.862-2.903.598-1.793.573-3.518 0-5.819-.41-1.656-1.196-2.903-2.862-2.903zm-3.216 13.807a1.08 1.08 0 0 1 1.074 1.088c0 .604-.48 1.094-1.074 1.094-.592 0-1.075-.49-1.075-1.094 0-.601.483-1.088 1.075-1.088"},"gnubash":{"title":"GNU Bash","hex":"4EAA25","d":"M21.038,4.9l-7.577-4.498C13.009,0.134,12.505,0,12,0c-0.505,0-1.009,0.134-1.462,0.403L2.961,4.9 C2.057,5.437,1.5,6.429,1.5,7.503v8.995c0,1.073,0.557,2.066,1.462,2.603l7.577,4.497C10.991,23.866,11.495,24,12,24 c0.505,0,1.009-0.134,1.461-0.402l7.577-4.497c0.904-0.537,1.462-1.529,1.462-2.603V7.503C22.5,6.429,21.943,5.437,21.038,4.9z M15.17,18.946l0.013,0.646c0.001,0.078-0.05,0.167-0.111,0.198l-0.383,0.22c-0.061,0.031-0.111-0.007-0.112-0.085L14.57,19.29 c-0.328,0.136-0.66,0.169-0.872,0.084c-0.04-0.016-0.057-0.075-0.041-0.142l0.139-0.584c0.011-0.046,0.036-0.092,0.069-0.121 c0.012-0.011,0.024-0.02,0.036-0.026c0.022-0.011,0.043-0.014,0.062-0.006c0.229,0.077,0.521,0.041,0.802-0.101 c0.357-0.181,0.596-0.545,0.592-0.907c-0.003-0.328-0.181-0.465-0.613-0.468c-0.55,0.001-1.064-0.107-1.072-0.917 c-0.007-0.667,0.34-1.361,0.889-1.8l-0.007-0.652c-0.001-0.08,0.048-0.168,0.111-0.2l0.37-0.236 c0.061-0.031,0.111,0.007,0.112,0.087l0.006,0.653c0.273-0.109,0.511-0.138,0.726-0.088c0.047,0.012,0.067,0.076,0.048,0.151 l-0.144,0.578c-0.011,0.044-0.036,0.088-0.065,0.116c-0.012,0.012-0.025,0.021-0.038,0.028c-0.019,0.01-0.038,0.013-0.057,0.009 c-0.098-0.022-0.332-0.073-0.699,0.113c-0.385,0.195-0.52,0.53-0.517,0.778c0.003,0.297,0.155,0.387,0.681,0.396 c0.7,0.012,1.003,0.318,1.01,1.023C16.105,17.747,15.736,18.491,15.17,18.946z M19.143,17.859c0,0.06-0.008,0.116-0.058,0.145 l-1.916,1.164c-0.05,0.029-0.09,0.004-0.09-0.056v-0.494c0-0.06,0.037-0.093,0.087-0.122l1.887-1.129 c0.05-0.029,0.09-0.004,0.09,0.056V17.859z M20.459,6.797l-7.168,4.427c-0.894,0.523-1.553,1.109-1.553,2.187v8.833 c0,0.645,0.26,1.063,0.66,1.184c-0.131,0.023-0.264,0.039-0.398,0.039c-0.42,0-0.833-0.114-1.197-0.33L3.226,18.64 c-0.741-0.44-1.201-1.261-1.201-2.142V7.503c0-0.881,0.46-1.702,1.201-2.142l7.577-4.498c0.363-0.216,0.777-0.33,1.197-0.33 c0.419,0,0.833,0.114,1.197,0.33l7.577,4.498c0.624,0.371,1.046,1.013,1.164,1.732C21.686,6.557,21.12,6.411,20.459,6.797z"},"docker":{"title":"Docker","hex":"2496ED","d":"M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"},"githubactions":{"title":"GitHub Actions","hex":"2088FF","d":"M10.984 13.836a.5.5 0 0 1-.353-.146l-.745-.743a.5.5 0 1 1 .706-.708l.392.391 1.181-1.18a.5.5 0 0 1 .708.707l-1.535 1.533a.504.504 0 0 1-.354.146zm9.353-.147l1.534-1.532a.5.5 0 0 0-.707-.707l-1.181 1.18-.392-.391a.5.5 0 1 0-.706.708l.746.743a.497.497 0 0 0 .706-.001zM4.527 7.452l2.557-1.585A1 1 0 0 0 7.09 4.17L4.533 2.56A1 1 0 0 0 3 3.406v3.196a1.001 1.001 0 0 0 1.527.85zm2.03-2.436L4 6.602V3.406l2.557 1.61zM24 12.5c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3h-2.08a3.503 3.503 0 0 1-3.46 3 3.502 3.502 0 0 1-3.46-3h-.558c-.972 0-1.85-.399-2.482-1.042V17c0 1.654 1.346 3 3 3h.04c.244-1.693 1.7-3 3.46-3 1.93 0 3.5 1.57 3.5 3.5S13.43 24 11.5 24a3.502 3.502 0 0 1-3.46-3H8c-2.206 0-4-1.794-4-4V9.899A5.008 5.008 0 0 1 0 5c0-2.757 2.243-5 5-5s5 2.243 5 5a5.005 5.005 0 0 1-4.952 4.998A2.482 2.482 0 0 0 7.482 12h.558c.244-1.693 1.7-3 3.46-3a3.502 3.502 0 0 1 3.46 3h2.08a3.503 3.503 0 0 1 3.46-3c1.93 0 3.5 1.57 3.5 3.5zm-15 8c0 1.378 1.122 2.5 2.5 2.5s2.5-1.122 2.5-2.5-1.122-2.5-2.5-2.5S9 19.122 9 20.5zM5 9c2.206 0 4-1.794 4-4S7.206 1 5 1 1 2.794 1 5s1.794 4 4 4zm9 3.5c0-1.378-1.122-2.5-2.5-2.5S9 11.122 9 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm9 0c0-1.378-1.122-2.5-2.5-2.5S18 11.122 18 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm-13 8a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm12 0c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3.002c-.007.001-.013.005-.021.005l-.506.017h-.017a.5.5 0 0 1-.016-.999l.506-.017c.018-.002.035.006.052.007A3.503 3.503 0 0 1 20.5 17c1.93 0 3.5 1.57 3.5 3.5zm-1 0c0-1.378-1.122-2.5-2.5-2.5S18 19.122 18 20.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5z"},"jenkins":{"title":"Jenkins","hex":"D24939","d":"M2.872 24h-.975a3.866 3.866 0 01-.07-.197c-.215-.666-.594-1.49-.692-2.154-.146-.984.78-1.039 1.374-1.465.915-.66 1.635-1.025 2.627-1.62.295-.179 1.182-.624 1.281-.829.201-.408-.345-.982-.49-1.3-.225-.507-.345-.937-.376-1.435-.824-.13-1.455-.627-1.844-1.185-.63-.925-1.066-2.635-.525-3.936.045-.103.254-.305.285-.463.06-.308-.105-.72-.12-1.048-.06-1.692.284-3.15 1.425-3.66.463-1.84 2.113-2.453 3.673-3.367.58-.342 1.224-.562 1.89-.807 2.372-.877 6.027-.712 7.994.783.836.633 2.176 1.97 2.656 2.939 1.262 2.555 1.17 6.825.287 9.934-.12.421-.29 1.032-.533 1.533-.168.35-.689 1.05-.625 1.36.064.314 1.19 1.17 1.432 1.395.434.422 1.26.975 1.324 1.5.07.557-.248 1.336-.41 1.875-.217.721-.436 1.441-.654 2.131H2.87zm11.104-3.54c-.545-.3-1.361-.622-2.065-.757-.87-.164-.78 1.188-.75 1.994.03.643.36 1.316.51 1.744.076.197.09.41.256.449.3.068 1.29-.326 1.575-.479.6-.328 1.064-.844 1.574-1.189.016-.17.016-.34.03-.508a2.648 2.648 0 00-1.095-.277c.314-.15.75-.15 1.035-.332l.016-.193c-.496-.03-.69-.254-1.021-.436zm7.454 2.935a17.78 17.78 0 00.465-1.752c.06-.287.215-.918.178-1.176-.059-.459-.684-.799-1.004-1.086-.584-.525-.95-.975-1.56-1.469-.249.375-.78.615-.983.914 1.447-.689 1.71 2.625 1.141 3.69.09.329.391.45.514.735l-.086.166h1.29c.013 0 .03 0 .044.014zm-6.634-.012c-.05-.074-.1-.135-.15-.209l-.301.195h.45zm2.77 0c.008-.209.018-.404.03-.598-.53.029-.825-.48-1.196-.527-.324-.045-.6.361-1.02.195-.095.105-.183.227-.284.316.154.18.295.375.424.584h.815c.014-.164.135-.285.3-.285.165 0 .284.121.284.27h.66zm2.116 0c-.314-.479-.947-.898-1.68-.555l-.03.541h1.71zm-8.51 0l-.104-.344c-.225-.72-.36-1.26-.405-1.68-.914-.436-1.875-.87-2.654-1.426-.15-.105-1.109-1.35-1.23-1.305-1.739.676-3.359 1.86-4.814 2.984.256.557.48 1.141.69 1.74h8.505zm8.265-2.113c-.029-.512-.164-1.56-.48-1.74-.66-.39-1.846.78-2.34.943.045.15.135.271.15.48.285-.074.645-.029.898.092-.299.03-.629.03-.824.164-.074.195.016.48-.029.764.69.197 1.5.303 2.385.332.164-.227.225-.645.211-1.082zm-4.08-.36c-.044.375.046.51.12.943 1.26.391 1.034-1.74-.135-.959zM8.76 19.5c-.45.457 1.27 1.082 1.814 1.115 0-.29.165-.564.135-.77-.65-.118-1.502-.042-1.945-.347zm5.565.215c0 .043-.061.03-.068.064.58.451 1.014.545 1.802.51.354-.262.67-.563 1.043-.807-.855.074-1.931.607-2.774.23zm3.42-17.726c-1.606-.906-4.35-1.591-6.076-.731-1.38.692-3.27 1.84-3.899 3.292.6 1.402-.166 2.686-.226 4.109-.018.757.36 1.42.391 2.242-.2.338-.825.38-1.26.356-.146-.729-.4-1.549-1.155-1.63-1.064-.116-1.845.764-1.89 1.683-.06 1.08.833 2.864 2.085 2.745.488-.046.608-.54 1.139-.54.285.57-.445.75-.523 1.154-.016.105.06.511.104.705.233.944.744 2.16 1.245 2.88.635.9 1.884 1.051 3.229 1.141.24-.525 1.125-.48 1.706-.346-.691-.27-1.336-.945-1.875-1.529-.615-.676-1.23-1.41-1.261-2.28 1.155 1.604 2.1 3 4.2 3.704 1.59.525 3.45-.254 4.664-1.109.51-.359.811-.93 1.17-1.439 1.35-1.936 1.98-4.71 1.846-7.394-.06-1.111-.06-2.221-.436-2.955-.389-.781-1.695-1.471-2.475-.781-.15-.764.63-1.23 1.545-.96-.66-.854-1.336-1.858-2.266-2.384zM13.58 14.896c.615 1.544 2.724 1.363 4.505 1.323-.084.194-.256.435-.465.515-.57.232-2.145.408-2.937-.012-.506-.27-.824-.873-1.102-1.227-.137-.172-.795-.608-.012-.609zm.164-.87c.893.464 2.52.517 3.731.48.066.267.066.593.068.913-1.55.08-3.386-.304-3.794-1.395h-.005zm6.675-.586c-.473.9-1.145 1.897-2.539 1.928-.023-.284-.045-.735 0-.904 1.064-.103 1.727-.646 2.543-1.017zm-.649-.667c-1.02.66-2.154 1.375-3.824 1.21-.351-.31-.485-1-.14-1.458.181.313.06.885.57.97.944.165 2.038-.579 2.73-.84.42-.713-.046-.976-.42-1.433-.782-.93-1.83-2.1-1.802-3.51.314-.224.346.346.391.45.404.96 1.424 2.175 2.174 3 .18.21.48.39.51.524.092.39-.254.854-.209 1.11zm-13.439-.675c-.314-.184-.393-.99-.768-1.01-.535-.03-.438 1.05-.436 1.68-.37-.33-.435-1.365-.164-1.89-.308-.15-.445.164-.618.284.22-1.59 2.34-.734 1.99.96zM4.713 5.995c-.685.756-.54 2.174-.459 3.188 1.244-.785 2.898.06 2.883 1.394.595-.016.223-.744.115-1.215-.353-1.528.592-3.187.041-4.59-1.064.084-1.939.52-2.578 1.215zm9.12 1.113c.307.562.404 1.148.84 1.57.195.19.574.424.387.95-.045.121-.365.391-.551.45-.674.195-2.254.03-1.721-.81.563.015 1.314.36 1.732-.045-.314-.524-.885-1.53-.674-2.13zm6.198-.013h.068c.33.668.6 1.375 1.004 1.965-.27.628-2.053 1.19-2.023.057.39-.17 1.05-.035 1.395-.25-.193-.556-.48-1.006-.434-1.771zm-6.927-1.617c-1.422-.33-2.131.592-2.56 1.553-.384-.094-.231-.615-.135-.883.255-.701 1.28-1.633 2.119-1.506.359.057.848.386.576.834zM9.642 1.593c-1.56.44-3.56 1.574-4.2 2.974.495-.07.84-.321 1.33-.351.186-.016.428.074.641.015.424-.104.78-1.065 1.102-1.41.31-.345.685-.496.94-.81.167-.09.409-.074.42-.33-.073-.075-.15-.135-.232-.105v.017z"},"kubernetes":{"title":"Kubernetes","hex":"326CE5","d":"M10.204 14.35l.007.01-.999 2.413a5.171 5.171 0 0 1-2.075-2.597l2.578-.437.004.005a.44.44 0 0 1 .484.606zm-.833-2.129a.44.44 0 0 0 .173-.756l.002-.011L7.585 9.7a5.143 5.143 0 0 0-.73 3.255l2.514-.725.002-.009zm1.145-1.98a.44.44 0 0 0 .699-.337l.01-.005.15-2.62a5.144 5.144 0 0 0-3.01 1.442l2.147 1.523.004-.002zm.76 2.75l.723.349.722-.347.18-.78-.5-.623h-.804l-.5.623.179.779zm1.5-3.095a.44.44 0 0 0 .7.336l.008.003 2.134-1.513a5.188 5.188 0 0 0-2.992-1.442l.148 2.615.002.001zm10.876 5.97l-5.773 7.181a1.6 1.6 0 0 1-1.248.594l-9.261.003a1.6 1.6 0 0 1-1.247-.596l-5.776-7.18a1.583 1.583 0 0 1-.307-1.34L2.1 5.573c.108-.47.425-.864.863-1.073L11.305.513a1.606 1.606 0 0 1 1.385 0l8.345 3.985c.438.209.755.604.863 1.073l2.062 8.955c.108.47-.005.963-.308 1.34zm-3.289-2.057c-.042-.01-.103-.026-.145-.034-.174-.033-.315-.025-.479-.038-.35-.037-.638-.067-.895-.148-.105-.04-.18-.165-.216-.216l-.201-.059a6.45 6.45 0 0 0-.105-2.332 6.465 6.465 0 0 0-.936-2.163c.052-.047.15-.133.177-.159.008-.09.001-.183.094-.282.197-.185.444-.338.743-.522.142-.084.273-.137.415-.242.032-.024.076-.062.11-.089.24-.191.295-.52.123-.736-.172-.216-.506-.236-.745-.045-.034.027-.08.062-.111.088-.134.116-.217.23-.33.35-.246.25-.45.458-.673.609-.097.056-.239.037-.303.033l-.19.135a6.545 6.545 0 0 0-4.146-2.003l-.012-.223c-.065-.062-.143-.115-.163-.25-.022-.268.015-.557.057-.905.023-.163.061-.298.068-.475.001-.04-.001-.099-.001-.142 0-.306-.224-.555-.5-.555-.275 0-.499.249-.499.555l.001.014c0 .041-.002.092 0 .128.006.177.044.312.067.475.042.348.078.637.056.906a.545.545 0 0 1-.162.258l-.012.211a6.424 6.424 0 0 0-4.166 2.003 8.373 8.373 0 0 1-.18-.128c-.09.012-.18.04-.297-.029-.223-.15-.427-.358-.673-.608-.113-.12-.195-.234-.329-.349-.03-.026-.077-.062-.111-.088a.594.594 0 0 0-.348-.132.481.481 0 0 0-.398.176c-.172.216-.117.546.123.737l.007.005.104.083c.142.105.272.159.414.242.299.185.546.338.743.522.076.082.09.226.1.288l.16.143a6.462 6.462 0 0 0-1.02 4.506l-.208.06c-.055.072-.133.184-.215.217-.257.081-.546.11-.895.147-.164.014-.305.006-.48.039-.037.007-.09.02-.133.03l-.004.002-.007.002c-.295.071-.484.342-.423.608.061.267.349.429.645.365l.007-.001.01-.003.129-.029c.17-.046.294-.113.448-.172.33-.118.604-.217.87-.256.112-.009.23.069.288.101l.217-.037a6.5 6.5 0 0 0 2.88 3.596l-.09.218c.033.084.069.199.044.282-.097.252-.263.517-.452.813-.091.136-.185.242-.268.399-.02.037-.045.095-.064.134-.128.275-.034.591.213.71.248.12.556-.007.69-.282v-.002c.02-.039.046-.09.062-.127.07-.162.094-.301.144-.458.132-.332.205-.68.387-.897.05-.06.13-.082.215-.105l.113-.205a6.453 6.453 0 0 0 4.609.012l.106.192c.086.028.18.042.256.155.136.232.229.507.342.84.05.156.074.295.145.457.016.037.043.09.062.129.133.276.442.402.69.282.247-.118.341-.435.213-.71-.02-.039-.045-.096-.065-.134-.083-.156-.177-.261-.268-.398-.19-.296-.346-.541-.443-.793-.04-.13.007-.21.038-.294-.018-.022-.059-.144-.083-.202a6.499 6.499 0 0 0 2.88-3.622c.064.01.176.03.213.038.075-.05.144-.114.28-.104.266.039.54.138.87.256.154.06.277.128.448.173.036.01.088.019.13.028l.009.003.007.001c.297.064.584-.098.645-.365.06-.266-.128-.537-.423-.608zM16.4 9.701l-1.95 1.746v.005a.44.44 0 0 0 .173.757l.003.01 2.526.728a5.199 5.199 0 0 0-.108-1.674A5.208 5.208 0 0 0 16.4 9.7zm-4.013 5.325a.437.437 0 0 0-.404-.232.44.44 0 0 0-.372.233h-.002l-1.268 2.292a5.164 5.164 0 0 0 3.326.003l-1.27-2.296h-.01zm1.888-1.293a.44.44 0 0 0-.27.036.44.44 0 0 0-.214.572l-.003.004 1.01 2.438a5.15 5.15 0 0 0 2.081-2.615l-2.6-.44-.004.005z"},"terraform":{"title":"Terraform","hex":"844FBA","d":"M1.44 0v7.575l6.561 3.79V3.787zm21.12 4.227l-6.561 3.791v7.574l6.56-3.787zM8.72 4.23v7.575l6.561 3.787V8.018zm0 8.405v7.575L15.28 24v-7.578z"},"ansible":{"title":"Ansible","hex":"EE0000","d":"M10.617 11.473l4.686 3.695-3.102-7.662zM12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm5.797 17.305c-.011.471-.403.842-.875.83-.236 0-.416-.09-.664-.293l-6.19-5-2.079 5.203H6.191L11.438 5.44c.124-.314.427-.52.764-.506.326-.014.63.189.742.506l4.774 11.494c.045.111.08.234.08.348-.001.009-.001.009-.001.023z"},"prometheus":{"title":"Prometheus","hex":"E6522C","d":"M12 0C5.373 0 0 5.372 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12c0-6.628-5.373-12-12-12zm0 22.46c-1.885 0-3.414-1.26-3.414-2.814h6.828c0 1.553-1.528 2.813-3.414 2.813zm5.64-3.745H6.36v-2.046h11.28v2.046zm-.04-3.098H6.391c-.037-.043-.075-.086-.111-.13-1.155-1.401-1.427-2.133-1.69-2.879-.005-.025 1.4.287 2.395.511 0 0 .513.119 1.262.255-.72-.843-1.147-1.915-1.147-3.01 0-2.406 1.845-4.508 1.18-6.207.648.053 1.34 1.367 1.387 3.422.689-.951.977-2.69.977-3.755 0-1.103.727-2.385 1.454-2.429-.648 1.069.168 1.984.894 4.256.272.854.237 2.29.447 3.201.07-1.892.395-4.652 1.595-5.605-.529 1.2.079 2.702.494 3.424.671 1.164 1.078 2.047 1.078 3.716a4.642 4.642 0 01-1.11 2.996c.792-.149 1.34-.283 1.34-.283l2.573-.502s-.374 1.538-1.81 3.019z"},"grafana":{"title":"Grafana","hex":"F46800","d":"M23.02 10.59a8.578 8.578 0 0 0-.862-3.034 8.911 8.911 0 0 0-1.789-2.445c.337-1.342-.413-2.505-.413-2.505-1.292-.08-2.113.4-2.416.62-.052-.02-.102-.044-.154-.064-.22-.089-.446-.172-.677-.247-.231-.073-.47-.14-.711-.197a9.867 9.867 0 0 0-.875-.161C14.557.753 12.94 0 12.94 0c-1.804 1.145-2.147 2.744-2.147 2.744l-.018.093c-.098.029-.2.057-.298.088-.138.042-.275.094-.413.143-.138.055-.275.107-.41.166a8.869 8.869 0 0 0-1.557.87l-.063-.029c-2.497-.955-4.716.195-4.716.195-.203 2.658.996 4.33 1.235 4.636a11.608 11.608 0 0 0-.607 2.635C1.636 12.677.953 15.014.953 15.014c1.926 2.214 4.171 2.351 4.171 2.351.003-.002.006-.002.006-.005.285.509.615.994.986 1.446.156.19.32.371.488.548-.704 2.009.099 3.68.099 3.68 2.144.08 3.553-.937 3.849-1.173a9.784 9.784 0 0 0 3.164.501h.08l.055-.003.107-.002.103-.005.003.002c1.01 1.44 2.788 1.646 2.788 1.646 1.264-1.332 1.337-2.653 1.337-2.94v-.058c0-.02-.003-.039-.003-.06.265-.187.52-.387.758-.6a7.875 7.875 0 0 0 1.415-1.7c1.43.083 2.437-.885 2.437-.885-.236-1.49-1.085-2.216-1.264-2.354l-.018-.013-.016-.013a.217.217 0 0 1-.031-.02c.008-.092.016-.18.02-.27.011-.162.016-.323.016-.48v-.253l-.005-.098-.008-.135a1.891 1.891 0 0 0-.01-.13c-.003-.042-.008-.083-.013-.125l-.016-.124-.018-.122a6.215 6.215 0 0 0-2.032-3.73 6.015 6.015 0 0 0-3.222-1.46 6.292 6.292 0 0 0-.85-.048l-.107.002h-.063l-.044.003-.104.008a4.777 4.777 0 0 0-3.335 1.695c-.332.4-.592.84-.768 1.297a4.594 4.594 0 0 0-.312 1.817l.003.091c.005.055.007.11.013.164a3.615 3.615 0 0 0 .698 1.82 3.53 3.53 0 0 0 1.827 1.282c.33.098.66.14.971.137.039 0 .078 0 .114-.002l.063-.003c.02 0 .041-.003.062-.003.034-.002.065-.007.099-.01.007 0 .018-.003.028-.003l.031-.005.06-.008a1.18 1.18 0 0 0 .112-.02c.036-.008.072-.013.109-.024a2.634 2.634 0 0 0 .914-.415c.028-.02.056-.041.085-.065a.248.248 0 0 0 .039-.35.244.244 0 0 0-.309-.06l-.078.042c-.09.044-.184.083-.283.116a2.476 2.476 0 0 1-.475.096c-.028.003-.054.006-.083.006l-.083.002c-.026 0-.054 0-.08-.002l-.102-.006h-.012l-.024.006c-.016-.003-.031-.003-.044-.006-.031-.002-.06-.007-.091-.01a2.59 2.59 0 0 1-.724-.213 2.557 2.557 0 0 1-.667-.438 2.52 2.52 0 0 1-.805-1.475 2.306 2.306 0 0 1-.029-.444l.006-.122v-.023l.002-.031c.003-.021.003-.04.005-.06a3.163 3.163 0 0 1 1.352-2.29 3.12 3.12 0 0 1 .937-.43 2.946 2.946 0 0 1 .776-.101h.06l.07.002.045.003h.026l.07.005a4.041 4.041 0 0 1 1.635.49 3.94 3.94 0 0 1 1.602 1.662 3.77 3.77 0 0 1 .397 1.414l.005.076.003.075c.002.026.002.05.002.075 0 .024.003.052 0 .07v.065l-.002.073-.008.174a6.195 6.195 0 0 1-.08.639 5.1 5.1 0 0 1-.267.927 5.31 5.31 0 0 1-.624 1.13 5.052 5.052 0 0 1-3.237 2.014 4.82 4.82 0 0 1-.649.066l-.039.003h-.287a6.607 6.607 0 0 1-1.716-.265 6.776 6.776 0 0 1-3.4-2.274 6.75 6.75 0 0 1-.746-1.15 6.616 6.616 0 0 1-.714-2.596l-.005-.083-.002-.02v-.056l-.003-.073v-.096l-.003-.104v-.07l.003-.163c.008-.22.026-.45.054-.678a8.707 8.707 0 0 1 .28-1.355c.128-.444.286-.872.473-1.277a7.04 7.04 0 0 1 1.456-2.1 5.925 5.925 0 0 1 .953-.763c.169-.111.343-.213.524-.306.089-.05.182-.091.273-.135.047-.02.093-.042.138-.062a7.177 7.177 0 0 1 .714-.267l.145-.045c.049-.015.098-.026.148-.041.098-.029.197-.052.296-.076.049-.013.1-.02.15-.033l.15-.032.151-.028.076-.013.075-.01.153-.024c.057-.01.114-.013.171-.023l.169-.021c.036-.003.073-.008.106-.01l.073-.008.036-.003.042-.002c.057-.003.114-.008.171-.01l.086-.006h.023l.037-.003.145-.007a7.999 7.999 0 0 1 1.708.125 7.917 7.917 0 0 1 2.048.68 8.253 8.253 0 0 1 1.672 1.09l.09.077.089.078c.06.052.114.107.171.159.057.052.112.106.166.16.052.055.107.107.159.164a8.671 8.671 0 0 1 1.41 1.978c.012.026.028.052.04.078l.04.078.075.156c.023.051.05.1.07.153l.065.15a8.848 8.848 0 0 1 .45 1.34.19.19 0 0 0 .201.142.186.186 0 0 0 .172-.184c.01-.246.002-.532-.024-.856z"},"owasp":{"title":"OWASP","hex":"000000","d":"M15.897 20.503c-.384 0-1.782-2.489-1.97-3.198-.393-1.486-.308-2.114-.285-2.314.072-.613.667-.92.703-1.748.01-.256.14-1.535.243-2.534a1.723 1.723 0 0 1-.733-.343c.676.908-.32 1.995-1.767 3.443-1.536 1.536-4.945 2.961-4.945 2.961s1.425-3.41 2.961-4.945c1.13-1.129 2.04-1.983 2.816-1.983.22 0 .427.067.627.216a1.722 1.722 0 0 1-.343-.733c-.999.103-2.278.232-2.534.244-.829.036-1.135.63-1.747.702-.07.008-.194.024-.388.024-.36 0-.963-.054-1.926-.31-.772-.203-3.648-1.84-3.14-2.045.26-.105 1.087-.176 2.175-.176 1.047 0 2.337.066 3.596.23 1.57.205 3.01.463 3.992.656.016-.053.035-.104.058-.154l-1.004-.48s-.8-.92-.715-.984a.02.02 0 0 1 .012-.003c.126 0 .767.733.829.816l.605.202-.284-.249s-.388-1.438-.287-1.472h.004c.106 0 .459 1.25.489 1.34.07.06.303.152.596.32l-.308-.79s.14-1.305.243-1.305h.003c.105.021-.02 1.089-.047 1.221l.51.783a1.31 1.31 0 0 1 .463-.082c.184 0 .374.036.558.107-.236-.502-.218-1.025.095-1.338a.84.84 0 0 1 .353-.209.462.462 0 0 1 .457-.383c.127 0 .254.05.352.148a.497.497 0 0 1 .147.335c.151-.311.329-.73.317-.867-.03-.307-.386-.852-.39-.857a.076.076 0 0 1 .064-.119c.025 0 .05.012.064.035.016.023.381.582.414.927.018.198-.21.696-.333.95a2.227 2.227 0 0 1 .873.874c.245-.12.715-.334.927-.334l.024.001c.345.033.904.399.927.414a.076.076 0 0 1-.084.128c-.005-.004-.55-.36-.857-.39h-.015c-.15 0-.552.171-.852.317.12.004.242.053.335.147a.482.482 0 0 1 .012.681.459.459 0 0 1-.247.128.845.845 0 0 1-.21.354.924.924 0 0 1-.67.255c-.212 0-.441-.055-.667-.16.132.343.142.708.025 1.02l.783.51c.095-.019.666-.088.993-.088.13 0 .222.011.228.04.02.106-1.305.247-1.305.247l-.79-.308c.168.293.26.527.32.596.091.03 1.374.392 1.34.493-.004.012-.026.017-.063.017-.283 0-1.41-.304-1.41-.304l-.248-.284.202.605c.087.065.876.755.813.841-.004.005-.009.007-.016.007-.139 0-.967-.722-.967-.722l-.481-1.004a1.18 1.18 0 0 1-.154.058c.193.982.451 2.422.656 3.992.335 2.569.26 5.261.054 5.77-.016.041-.042.06-.076.06M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12m0-22.153C6.393 1.847 1.847 6.393 1.847 12S6.393 22.153 12 22.153 22.153 17.607 22.153 12 17.607 1.847 12 1.847Z"},"sonarqube":{"title":"SonarQube","hex":"126ED3","d":"M12 0a.774.774 0 0 0-.775.775c0 .43.346.776.775.776 5.762 0 10.45 4.687 10.45 10.449 0 .43.345.775.775.775A.774.774 0 0 0 24 12c0-6.616-5.384-12-12-12zm0 3.932a.774.774 0 0 0-.775.775c0 .43.346.775.775.775A6.524 6.524 0 0 1 18.518 12c0 .43.346.775.775.775.43 0 .775-.346.775-.775 0-4.448-3.62-8.068-8.068-8.068zm0 3.925a.774.774 0 0 0-.775.776c0 .43.346.775.775.775A2.597 2.597 0 0 1 14.592 12c0 .43.346.775.775.775.43 0 .776-.346.776-.775A4.145 4.145 0 0 0 12 7.857zM.775 11.225A.774.774 0 0 0 0 12c0 6.616 5.384 12 12 12 .43 0 .775-.346.775-.775a.774.774 0 0 0-.775-.776C6.238 22.45 1.55 17.762 1.55 12a.774.774 0 0 0-.775-.775zm3.932 0a.774.774 0 0 0-.775.775c0 4.448 3.62 8.068 8.068 8.068.43 0 .775-.346.775-.775a.774.774 0 0 0-.775-.775A6.524 6.524 0 0 1 5.482 12a.774.774 0 0 0-.775-.775zm3.926 0a.774.774 0 0 0-.776.775A4.145 4.145 0 0 0 12 16.143c.43 0 .775-.347.775-.776a.774.774 0 0 0-.775-.775A2.597 2.597 0 0 1 9.408 12a.774.774 0 0 0-.775-.775z"},"trivy":{"title":"Trivy","hex":"1904DA","d":"M4.375 7.311 1.962 5.918a.1.1 0 0 1 0-.174L11.828.047a.343.343 0 0 1 .344 0l9.864 5.696a.1.1 0 0 1 0 .175L19.624 7.31a.962.962 0 0 1-.052-.074c-.914-1.478-2.124-2.592-3.596-3.31-4.088-1.994-9.164-.505-11.6 3.385ZM12.262 23.899v-3.14c5.693-2.087 9.01-7.766 7.588-12.985l2.436-1.42a.1.1 0 0 1 .151.088v11.645a.1.1 0 0 1-.05.087l-9.973 5.812a.1.1 0 0 1-.152-.087Zm-.559-3.141v3.14a.1.1 0 0 1-.151.086l-9.933-5.81a.114.114 0 0 1-.056-.099V6.436a.1.1 0 0 1 .15-.087l2.44 1.41c-1.455 5.307 1.846 10.993 7.55 13ZM7.013 8.834 4.807 7.561c2.306-3.665 7.094-5.066 10.95-3.186 1.385.676 2.526 1.727 3.39 3.124l.04.062-2.195 1.268a5.57 5.57 0 0 0-2.429-2.307c-2.603-1.27-5.901-.253-7.552 2.311Zm9.337 5.2c.813-1.371 1.088-2.99.798-4.685l2.255-1.314c1.245 4.86-1.864 10.169-7.14 12.192v-3.072c1.86-.67 3.272-1.747 4.087-3.12ZM4.6 8.018l2.27 1.31c-.225 1.571.112 3.204.951 4.606.919 1.536 2.225 2.629 3.881 3.25v3.045C6.327 18.25 3.297 13.042 4.601 8.017Zm5.303 2.486-2.459-1.42c1.52-2.34 4.53-3.268 6.9-2.112a5.075 5.075 0 0 1 2.216 2.108l-2.471 1.427a2.311 2.311 0 0 0-2.03-1.195c-.825 0-1.645.43-2.156 1.192Zm4.338.522 2.443-1.408c.22 1.51-.043 2.945-.765 4.162-.735 1.238-1.998 2.224-3.658 2.856v-2.631c1.25-.691 1.968-1.771 1.98-2.979ZM8.25 13.676A6.576 6.576 0 0 1 7.34 9.6l2.446 1.412c-.016 1.271.73 2.437 1.917 2.997v2.624a6.977 6.977 0 0 1-3.453-2.956Zm3.853-.148-.137.073-.157-.075c-1.023-.504-1.524-1.606-1.557-2.417a1.99 1.99 0 0 1 .004-.23 2.153 2.153 0 0 1 1.163-.957c.508-.178 1.034-.153 1.444.071.6.327.84.797.86.86.008.156.004.253.004.256-.038.981-.63 1.863-1.624 2.419Z"},"vault":{"title":"Vault","hex":"FFEC6E","d":"M0 0l11.955 24L24 0zm13.366 4.827h1.393v1.38h-1.393zm-2.77 5.569H9.22V8.993h1.389zm0-2.087H9.22V6.906h1.389zm0-2.086H9.22V4.819h1.389zm2.087 6.263h-1.377V11.08h1.388zm0-2.09h-1.377V8.993h1.388zm0-2.087h-1.377V6.906h1.388zm0-2.086h-1.377V4.819h1.388zm.683.683h1.393v1.389h-1.393zm0 3.475V8.993h1.389v1.388Z"},"mlflow":{"title":"MLflow","hex":"0194E2","d":"M11.883.002a12.044 12.044 0 0 0-9.326 19.463l3.668-2.694A7.573 7.573 0 0 1 12.043 4.45v2.867l6.908-5.14A12.012 12.012 0 0 0 11.883.002zm9.562 4.533L17.777 7.23a7.573 7.573 0 0 1-5.818 12.322v-2.867l-6.908 5.14a12.046 12.046 0 0 0 16.394-17.29z"},"githubcopilot":{"title":"GitHub Copilot","hex":"000000","d":"M23.922 16.997C23.061 18.492 18.063 22.02 12 22.02 5.937 22.02.939 18.492.078 16.997A.641.641 0 0 1 0 16.741v-2.869a.883.883 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.098 10.098 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952C7.255 2.937 9.248 1.98 11.978 1.98c2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.841.841 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256Zm-11.75-5.992h-.344a4.359 4.359 0 0 1-.355.508c-.77.947-1.918 1.492-3.508 1.492-1.725 0-2.989-.359-3.782-1.259a2.137 2.137 0 0 1-.085-.104L4 11.746v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.359 4.359 0 0 1-.355-.508Zm2.328 3.25c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm-5 0c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm3.313-6.185c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"},"nginx":{"title":"NGINX","hex":"009639","d":"M12 0L1.605 6v12L12 24l10.395-6V6L12 0zm6 16.59c0 .705-.646 1.29-1.529 1.29-.631 0-1.351-.255-1.801-.81l-6-7.141v6.66c0 .721-.57 1.29-1.274 1.29H7.32c-.721 0-1.29-.6-1.29-1.29V7.41c0-.705.63-1.29 1.5-1.29.646 0 1.38.255 1.83.81l5.97 7.141V7.41c0-.721.6-1.29 1.29-1.29h.075c.72 0 1.29.6 1.29 1.29v9.18H18z"}};
+const DATA=[
+{id:"p0",num:"المرحلة 0",title:"قاعدة الانطلاق",meta:"أسبوع واحد",
+ why:"قبل أي أداة: افهم الخريطة كلها. انت مش مبتدئ من الصفر — خبرة الـ Testing والـ Python هي نقطة دخولك.",
+ traps:["إنك تبدأ أدوات متقدمة قبل ما تفهم الصورة — بتتوه وتسيب","تجمع كورسات كتير وتبصلهم بس من غير ما تبدأ فعلاً"],
+ topics:[
+  {t:"فهم عالم DevOps والصورة الكاملة",time:"3-5 ساعات",hours:5,icons:[],
+   goal:"داخل تفهم: إيه هي DevOps فعلاً، شكل الـ lifecycle (code → build → test → deploy → monitor)، وفين مكان كل أداة.",
+   out:["أشرح الـ CI/CD lifecycle لحد تاني في دقيقتين","أحدد مكان أي أداة على الخريطة","أعرف الفرق بين DevOps و SRE و Platform Engineering و DevSecOps"],
+   res:[{tag:"en",name:"DevOps Roadmap — مرجعك الدائم",url:"https://roadmap.sh/devops"},{tag:"ar",name:"مقدمة للـ DevOps بالعربي (يوتيوب)",url:"https://www.youtube.com/results?search_query=%D9%85%D9%82%D8%AF%D9%85%D8%A9+DevOps+%D8%A8%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A"},{tag:"en",name:"TechWorld with Nana — القناة اللي هترافقك الرحلة كلها",url:"https://www.youtube.com/@TechWorldwithNana"}],
+   proj:"ارسم بإيدك رحلة الكود من الـ commit للـ production. لو رسمتها من دماغك، انت فاهم."}
+ ]},
+{id:"p1",num:"المرحلة 1",title:"الأساسات — Linux, Networking, Git, Scripting",meta:"الشهر 1 إلى 2",
+ why:"معظم مشاكل الـ DevOps الحقيقية بتتحل بفهم Linux والشبكات، مش بالأدوات الحديثة. اللي بيستعجل المرحلة دي بيرجعلها غصب عنه.",
+ traps:["تعدّي على Linux بسرعة — ده أكتر خطأ، كل حاجة جاية بتبني عليه","تحفظ أوامر من غير ما تفهمها — احفظ المبدأ مش الأمر","تستخدم GUI في كل حاجة بدل الـ terminal"],
+ topics:[
+  {t:"Linux بجدية",time:"4 أسابيع · الأهم",hours:40,icons:["linux"],
+   goal:"داخل تتعلم: الـ filesystem، الـ permissions، الـ processes، systemd، الـ package managers، و SSH.",
+   out:["أشتغل يوم كامل بالـ terminal من غير GUI","أدير permissions بـ chmod/chown وأفهم ليه 755 غير 644","أدير services بـ systemctl وأقرا logs بـ journalctl","أظبط SSH بـ key-based authentication","أخلّص أول 15 مستوى من لعبة Bandit"],
+   res:[{tag:"ar",name:"دورة لينكس كاملة بالعربي (يوتيوب)",url:"https://www.youtube.com/results?search_query=%D8%AF%D9%88%D8%B1%D8%A9+%D9%84%D9%8A%D9%86%D9%83%D8%B3+%D9%83%D8%A7%D9%85%D9%84%D8%A9+%D8%A8%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A"},{tag:"en",name:"Linux Journey — تفاعلي ومجاني",url:"https://linuxjourney.com"},{tag:"en",name:"OverTheWire: Bandit (إلزامي)",url:"https://overthewire.org/wargames/bandit/"},{tag:"en paid",name:"RHCSA — Sander van Vugt",url:"https://www.sandervanvugt.com"}],
+   proj:"نصّب Ubuntu Server على VM، واعمل user بصلاحيات محدودة + SSH keys + static IP."},
+  {t:"أساسيات الشبكات للـ DevOps",time:"أسبوعان",hours:20,icons:["nginx"],
+   goal:"داخل تتعلم: IP/Subnets, DNS, HTTP/HTTPS, Ports, Firewalls, Load Balancing.",
+   out:["أشرح رحلة الـ request (DNS → TCP → HTTP)","أشخّص مشكلة اتصال بـ curl و dig و ss","أفهم الـ ports وليه 443 غير 80","أشرح الـ reverse proxy وفايدة الـ load balancer"],
+   res:[{tag:"en",name:"Practical Networking — Networking Fundamentals",url:"https://www.youtube.com/results?search_query=practical+networking+fundamentals+playlist"},{tag:"ar",name:"أساسيات الشبكات بالعربي",url:"https://www.youtube.com/results?search_query=%D8%A3%D8%B3%D8%A7%D8%B3%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D8%B4%D8%A8%D9%83%D8%A7%D8%AA+%D9%83%D9%88%D8%B1%D8%B3+%D9%83%D8%A7%D9%85%D9%84"},{tag:"en",name:"Hussein Nasser (مصري، إنجليزي واضح)",url:"https://www.youtube.com/@hnasr"}],
+   proj:"شغّل nginx على الـ VM وخليه يخدم صفحة، ووصلها من جهاز تاني على نفس الشبكة."},
+  {t:"Git و GitHub زي المحترفين",time:"أسبوع",hours:10,icons:["git","github"],
+   goal:"داخل تتعلم: branching, merging, rebase, PRs وحل الـ conflicts، والـ workflow اللي الفرق بتشتغل بيه.",
+   out:["أشتغل بـ feature branches وأفتح Pull Request","أحل merge conflict من غير خسائر","أستخدم git log و diff و stash و reset بثقة","أفرق بين merge و rebase"],
+   res:[{tag:"en",name:"Learn Git Branching — تفاعلي (إلزامي)",url:"https://learngitbranching.js.org"},{tag:"en",name:"Pro Git Book — مجاني",url:"https://git-scm.com/book"},{tag:"ar",name:"كورس Git & GitHub بالعربي",url:"https://www.youtube.com/results?search_query=%D9%83%D9%88%D8%B1%D8%B3+git+github+%D8%A8%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A+%D9%83%D8%A7%D9%85%D9%84"}],
+   proj:"ارفع مشروع الـ Selenium بتاعك على GitHub بـ README محترف. أول حجر في الـ portfolio."},
+  {t:"Bash + Python للـ Automation",time:"أسبوعان",hours:20,icons:["gnubash","python"],
+   goal:"داخل تتعلم: كتابة scripts بتعمل شغل حقيقي. Python هتوجهها للـ automation، والـ Bash الجديد.",
+   out:["أكتب Bash script بـ variables و loops و functions","أعمل backup script يضغط فولدر ويسميه بالتاريخ","أستخدم Python للتعامل مع APIs وقراءة logs","أجدول script بـ cron"],
+   res:[{tag:"en",name:"Bash Scripting Full Course — freeCodeCamp",url:"https://www.youtube.com/results?search_query=bash+scripting+full+course+freecodecamp"},{tag:"en",name:"Automate the Boring Stuff — كتاب مجاني",url:"https://automatetheboringstuff.com"},{tag:"ar",name:"شرح Bash بالعربي",url:"https://www.youtube.com/results?search_query=bash+scripting+%D8%A8%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A"}],
+   proj:"script يعمل health check لموقع (status + response time) ويسجل النتيجة، ويشتغل بـ cron كل 5 دقايق."}
+ ]},
+{id:"p2",num:"المرحلة 2",title:"الـ Bootcamp — النظرة الشاملة بالمشاريع",meta:"الشهر 2 إلى 3",
+ why:"هنا نصيحة صاحبك بتتنفذ: overview سريع بمشاريع عشان متزهقش، والتعميق بعدها. هتخرج شايف الصورة كاملة وعامل حاجات بإيدك.",
+ traps:["تغرق في تفاصيل كل أداة في الـ bootcamp — المرحلة دي للترابط مش العمق","متعملش المشروع وتكتفي بالفرجة"],
+ topics:[
+  {t:"DevOps Bootcamp (اختار مسار واحد)",time:"4-6 أسابيع",hours:50,icons:["docker","githubactions"],
+   goal:"جولة عملية على كل الأدوات مرة واحدة — Docker، CI/CD، Cloud، K8s intro — من غير تعمق، المهم الترابط.",
+   out:["عملت containerize لتطبيق ورفعته Docker Hub","بنيت CI pipeline بيشتغل مع كل push","عملت deploy لتطبيق على cloud","فاهم إزاي الأدوات بتشتغل مع بعض"],
+   res:[{tag:"en paid",name:"DevOps Bootcamp — TechWorld with Nana",url:"https://www.techworld-with-nana.com/devops-bootcamp"},{tag:"en",name:"البديل المجاني: Nana على يوتيوب بالترتيب",url:"https://www.youtube.com/@TechWorldwithNana/videos"},{tag:"ar",name:"مسار DevOps تفاعلي بالعربي — Coddy",url:"https://coddy.tech/landing/ar/devops"}],
+   proj:"تطبيق بسيط (API بـ Python) → Dockerfile → GitHub Actions build & test → deploy على سيرفر."}
+ ]},
+{id:"p3",num:"المرحلة 3",title:"التعميق — الأدوات الأساسية واحدة واحدة",meta:"الشهر 3 إلى 6 · أطول مرحلة",
+ why:"هنا بتبني العمق اللي بيفرق في الـ interviews. الترتيب مقصود، ومتنتقلش لأداة قبل ما تخلص مشروع اللي قبلها.",
+ traps:["تقفز لأداة قبل ما تخلّص مشروع اللي قبلها","تتعلم 3 cloud providers مع بعض — AWS بس وكفاية","تحفظ أوامر K8s من غير ما تفهم الـ architecture"],
+ topics:[
+  {t:"Docker بعمق",time:"3 أسابيع",hours:25,icons:["docker"],
+   goal:"داخل تتعلم: images vs containers، Dockerfiles محترفة (multi-stage)، volumes، networks، و docker-compose.",
+   out:["أكتب Dockerfile محسّن: multi-stage و non-root user","أشغّل app + database بـ docker-compose","أدير volumes للبيانات","أعمل debug لـ container بـ logs و exec و inspect"],
+   res:[{tag:"en paid",name:"Docker & Kubernetes: The Practical Guide — Academind",url:"https://www.udemy.com/course/docker-kubernetes-the-practical-guide/"},{tag:"ar",name:"Ahmed Elfakharany — Docker و K8s بالعربي",url:"https://www.udemy.com/user/ahmedelfakharany3/"},{tag:"en",name:"Play with Docker — معمل مجاني",url:"https://labs.play-with-docker.com"}],
+   proj:"حط الـ test framework بتاعك (Selenium/Java) جوه Docker image بحيث أي حد يشغّله بأمر واحد."},
+  {t:"CI/CD — GitHub Actions ثم Jenkins",time:"3 أسابيع",hours:25,icons:["githubactions","jenkins"],
+   goal:"داخل تتعلم: pipelines كاملة — build, test, deploy — بالـ triggers والـ secrets. هنا خبرة التستنج بتلمع.",
+   out:["workflow كامل: build → unit → integration → deploy","أستخدم secrets صح مش hardcoded","caching و matrix builds","أبني نفس الـ pipeline على Jenkins"],
+   res:[{tag:"en",name:"GitHub Actions Docs — ابدأ بالـ quickstart",url:"https://docs.github.com/en/actions"},{tag:"en",name:"GitHub Actions — Nana",url:"https://www.youtube.com/results?search_query=github+actions+tutorial+techworld+with+nana"},{tag:"en",name:"Jenkins — KodeKloud",url:"https://kodekloud.com"}],
+   proj:"pipeline بيشغّل الـ Selenium tests في Docker مع كل PR، ويمنع الـ merge لو فشلت. مشروع مقابلات."},
+  {t:"AWS — السحابة الأساسية",time:"5-6 أسابيع",hours:50,icons:["aws"],
+   goal:"داخل تتعلم: EC2, S3, VPC, IAM, RDS, Lambda بعمق شهادة Solutions Architect Associate.",
+   out:["launch لـ EC2 جوه VPC بنيته بنفسي","أفهم IAM: users و roles و policies","static site على S3 مع CloudFront","architecture: LB + auto scaling + RDS","أحل practice exams للـ SAA 80%+"],
+   res:[{tag:"en paid",name:"Adrian Cantrill — SAA (الأعمق)",url:"https://learn.cantrill.io"},{tag:"en paid",name:"Stephane Maarek — SAA (الأشهر)",url:"https://www.udemy.com/user/stephane-maarek/"},{tag:"en",name:"AWS Skill Builder — مجاني",url:"https://skillbuilder.aws"},{tag:"ar",name:"شرح AWS بالعربي",url:"https://www.youtube.com/results?search_query=%D9%83%D9%88%D8%B1%D8%B3+AWS+%D8%A8%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A"}],
+   proj:"انقل مشروعك للـ AWS: app على EC2/ECS و artifacts على S3 بـ IAM roles من غير keys مكشوفة.",
+   note:"الـ Free Tier بيكفي لو بتقفل الموارد ورا نفسك. حط billing alert بدولار من أول يوم."},
+  {t:"Kubernetes (مستوى CKA)",time:"5-6 أسابيع",hours:50,icons:["kubernetes"],
+   goal:"داخل تتعلم: pods, deployments, services, ingress, configmaps, secrets, Helm.",
+   out:["أشرح ليه K8s موجود وإمتى يكون overkill","deploy لتطبيق multi-service بـ manifests بإيدي","Ingress مع TLS","debug لـ pod بسرعة: describe و logs","أغلّف بـ Helm chart"],
+   res:[{tag:"en paid",name:"CKA — Mumshad/KodeKloud (بالـ labs)",url:"https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/"},{tag:"ar",name:"Kubernetes بالعربي — Ahmed Elfakharany",url:"https://www.udemy.com/user/ahmedelfakharany3/"},{tag:"en",name:"Killercoda — مجاني في المتصفح",url:"https://killercoda.com"},{tag:"en",name:"Kubernetes Official Tutorials",url:"https://kubernetes.io/docs/tutorials/"}],
+   proj:"انقل مشروعك من docker-compose لـ Kubernetes (minikube): deployments + services + ingress + secrets."},
+  {t:"Infrastructure as Code — Terraform + Ansible",time:"3 أسابيع",hours:25,icons:["terraform","ansible"],
+   goal:"داخل تتعلم: بناء الـ infrastructure بالكود (Terraform) وإعداد السيرفرات تلقائياً (Ansible).",
+   out:["Terraform يبني VPC + EC2 + S3 بأمر واحد","أفهم الـ state file وليه لازم يتحمي","Ansible playbook يجهز سيرفر كامل","أمسح وأعيد البيئة بثقة: destroy ثم apply"],
+   res:[{tag:"en",name:"Terraform Tutorials — HashiCorp",url:"https://developer.hashicorp.com/terraform/tutorials"},{tag:"en",name:"Terraform Course — Nana",url:"https://www.youtube.com/results?search_query=terraform+course+techworld+with+nana"},{tag:"en paid",name:"Ansible — KodeKloud",url:"https://kodekloud.com"},{tag:"en",name:"Ansible Docs",url:"https://docs.ansible.com"}],
+   proj:"Terraform يبني بيئة مشروعك على AWS كاملة، بحيث ترجعها في 10 دقايق لو اتمسحت."},
+  {t:"Monitoring — Prometheus + Grafana",time:"أسبوعان",hours:15,icons:["prometheus","grafana"],
+   goal:"داخل تتعلم: تعرف إن النظام تعبان قبل ما حد يتصل — metrics و alerts و dashboards.",
+   out:["Prometheus يجمع metrics من تطبيق","Grafana dashboard: latency و errors","alert على error rate","أفرق بين metrics و logs و traces"],
+   res:[{tag:"en",name:"Prometheus Docs",url:"https://prometheus.io/docs/introduction/overview/"},{tag:"en",name:"Grafana Play — جرب في المتصفح",url:"https://play.grafana.org"},{tag:"en",name:"Prometheus + Grafana — Nana",url:"https://www.youtube.com/results?search_query=prometheus+grafana+tutorial+techworld+with+nana"}],
+   proj:"ضيف monitoring stack لمشروع الـ K8s: Prometheus + Grafana + alert حقيقي واحد."}
+ ]},
+{id:"p4",num:"المرحلة 4",title:"طبقة الـ Security — تحولك لـ DevSecOps",meta:"الشهر 6 إلى 8",theme:"sec",
+ why:"هنا بتتميز عن أغلب الـ DevOps engineers. الفكرة واحدة اسمها shift-left: الحماية بتتبني جوه الـ pipeline من أول يوم، مش فحص في الآخر. كل اللي بنيته قبل كده هو الأرض اللي هتأمنها.",
+ traps:["تذاكر security نظري من غير ما تطبقه على مشاريعك","تفتكر الـ DevSecOps = أدوات بس — لأ، هي عقلية shift-left","تهمل الـ IAM والـ secrets management — ده أكتر مكان بيتخرق"],
+ topics:[
+  {t:"أساسيات الـ Security (مفاهيم + عقلية)",time:"3 أسابيع",hours:25,icons:[],
+   goal:"داخل تتعلم: CIA triad، التشفير عملياً (TLS, hashing, keys)، authentication vs authorization، تقييم المخاطر.",
+   out:["أشرح TLS handshake وليه الـ certificates موجودة","أفرق بين encryption و hashing و encoding","تقييم مخاطر بسيط لتطبيق","أربط مفاهيم IAM بالصورة الأكبر"],
+   res:[{tag:"en",name:"Professor Messer — Security+ مجاناً",url:"https://www.professormesser.com"},{tag:"en",name:"TryHackMe — مسارات تأسيسية",url:"https://tryhackme.com"},{tag:"ar",name:"أساسيات الأمن السيبراني بالعربي",url:"https://www.youtube.com/results?search_query=%D8%A3%D8%B3%D8%A7%D8%B3%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D8%A3%D9%85%D9%86+%D8%A7%D9%84%D8%B3%D9%8A%D8%A8%D8%B1%D8%A7%D9%86%D9%8A+%D9%83%D9%88%D8%B1%D8%B3"}],
+   proj:"اكتب لمشروعك security review من 5 نقاط: فين ممكن يتضرب وإزاي تقفل كل نقطة.",
+   note:"شهادة Security+ اختيارية — المحتوى هو المهم. ادفع فيها لو هتستهدف security roles في الخليج."},
+  {t:"Secure Development — فهم OWASP Top 10",time:"أسبوعان",hours:15,icons:["owasp"],
+   goal:"داخل تتعلم: أشهر أخطاء الحماية في تطبيقات الويب وإزاي الكود بيتكتب صح عشان يتجنبها — بعين الـ defender.",
+   out:["أعرف الـ OWASP Top 10 وأشرح كل واحدة بمثال","أراجع كود وألاقي input validation ناقص","أعرف إزاي الـ frameworks بتحمي by default","أضيف security checks للـ test cases (خبرتك ذهب هنا)"],
+   res:[{tag:"en",name:"OWASP Top 10 — الرسمية",url:"https://owasp.org/www-project-top-ten/"},{tag:"en",name:"PortSwigger Web Security Academy (المعيار)",url:"https://portswigger.net/web-security"},{tag:"en",name:"OWASP Cheat Sheet Series",url:"https://cheatsheetseries.owasp.org"}],
+   proj:"خد تطبيق مشروعك واعمل OWASP checklist: راجع كل بند وصلّح أهم 3."},
+  {t:"Security في الـ Pipeline — SAST, SCA, Secrets",time:"3 أسابيع",hours:25,icons:["sonarqube","trivy"],
+   goal:"قلب الـ DevSecOps: أدوات الفحص الأوتوماتيكي جوه الـ CI/CD — فحص الكود، فحص الـ dependencies، وكشف الـ secrets.",
+   out:["SonarQube يفحص جودة وأمان الكود","Trivy يفحص الـ Docker images قبل الـ deploy","Gitleaks يمنع commit فيه password/API key","الـ pipeline يقف تلقائياً لو لقى مشكلة حرجة"],
+   res:[{tag:"en",name:"TryHackMe DevSecOps Path — تأمين الـ pipelines والـ IaC",url:"https://tryhackme.com/path/outline/devsecops"},{tag:"en",name:"Trivy — فحص images و IaC",url:"https://trivy.dev"},{tag:"en",name:"SonarQube Docs",url:"https://docs.sonarsource.com"},{tag:"en",name:"Gitleaks — كشف الـ secrets",url:"https://github.com/gitleaks/gitleaks"}],
+   proj:"المشروع المحوري: ضيف 3 بوابات فحص — SonarQube + Trivy + Gitleaks — وجرب تعدي كود فيه مشكلة وشوفه بيترفض. ده عنوان الـ CV الجديد."},
+  {t:"Container & Cloud Security + الـ Secrets",time:"أسبوعان",hours:15,icons:["vault"],
+   goal:"داخل تتعلم: تأمين الـ Docker والـ K8s والـ AWS: least privilege، network policies، وإدارة الأسرار بـ Vault.",
+   out:["best practices للـ containers: non-root و minimal images","K8s RBAC و network policies","أراجع AWS IAM وأقفل الصلاحيات الزيادة","أدير secrets بـ Vault بدل ملفات env"],
+   res:[{tag:"en",name:"HashiCorp Vault — Tutorials",url:"https://developer.hashicorp.com/vault"},{tag:"en",name:"Kubernetes Security Docs",url:"https://kubernetes.io/docs/concepts/security/"},{tag:"en",name:"Docker Security Docs",url:"https://docs.docker.com/engine/security/"}],
+   proj:"راجع مشروع الـ K8s: شيل أي secret من الـ yaml لـ secret manager، وفعّل non-root containers."}
+ ]},
+{id:"p5",num:"المرحلة 5",title:"لمسة الـ AI — اتجاه السوق الجاي",meta:"الشهر 8 إلى 9",theme:"ai",
+ why:"بصراحة: DevAIOps كمسمى وظيفي لسه مش منتشر، لكن المهارات ورا الاسم مطلوبة فعلاً — تشغيل أنظمة AI/ML في production وتأمينها. انت متخصص AI في الكلية، فده تقاطع طبيعي ليك مش موضة.",
+ traps:["تفتكر MLOps هيخليك ML engineer — دي لمسة مش تخصص كامل","تثق في الـ AI tools من غير مراجعة — بتغلط بثقة"],
+ topics:[
+  {t:"MLOps — تشغيل الـ ML في production",time:"3 أسابيع",hours:25,icons:["mlflow","python"],
+   goal:"داخل تتعلم: دورة حياة الـ ML models — versioning، training pipelines، deployment، monitoring — بنفس أدوات DevOps.",
+   out:["أشرح الفرق بين DevOps pipeline و ML pipeline","أتتبع التجارب بـ MLflow","deploy لـ model كـ API جوه Docker","أفهم الـ drift والحاجة للـ retraining"],
+   res:[{tag:"en",name:"MLOps Zoomcamp — DataTalks.Club (مجاني بالمشاريع)",url:"https://github.com/DataTalksClub/mlops-zoomcamp"},{tag:"en",name:"MLflow Docs",url:"https://mlflow.org"},{tag:"en",name:"Made With ML — مرجع عملي مجاني",url:"https://madewithml.com"}],
+   proj:"خد model بسيط من الكلية، وحطه في الدورة الكاملة: Git → Docker → CI/CD → deployed API → monitoring."},
+  {t:"AI في شغل الـ DevOps اليومي",time:"أسبوعان",hours:15,icons:["githubcopilot"],
+   goal:"داخل تتعلم: استخدام الـ AI tools بذكاء — كتابة IaC أسرع، تحليل logs — مع فهم حدودها ومخاطرها.",
+   out:["أستخدم AI في كتابة Terraform و pipelines وأراجع ورا","أفهم مخاطر تسريب أكواد و secrets للـ tools","أتابع دمج الـ AI في الـ observability","عندي رأي من تجربة: إمتى الـ AI بيسرّعني"],
+   res:[{tag:"en",name:"GitHub Copilot Docs",url:"https://docs.github.com/en/copilot"},{tag:"en",name:"DeepLearning.AI — short courses مجانية",url:"https://www.deeplearning.ai/short-courses/"},{tag:"en",name:"OWASP Top 10 for LLM Apps (تقاطع تخصصك)",url:"https://owasp.org/www-project-top-10-for-large-language-model-applications/"}],
+   proj:"مقال LinkedIn إنجليزي: تجربتك في أتمتة حاجة بالـ AI — إيه نفع وإيه فشل. honesty بتلفت نظر أكتر من الـ hype."}
+ ]},
+{id:"p6",num:"المرحلة الأخيرة",title:"الـ Capstone والتسويق لنفسك",meta:"الشهر 9",
+ why:"كل اللي فات بيتجمع في مشروع واحد بيحكي قصتك: tester بقى يعرف يبني ويأمّن ويشغّل أنظمة كاملة.",
+ traps:["تعمل مشروع صغير مش بيورّي كل مهاراتك","تنسى توثيق المشروع — README ضعيف بيضيّع شغل شهور"],
+ topics:[
+  {t:"المشروع النهائي + الـ CV",time:"3-4 أسابيع",hours:30,icons:["docker","kubernetes","githubactions"],
+   goal:"داخل تبني: نظام كامل production-grade يبقى هو الـ portfolio، وتجهز أوراقك للسوق.",
+   out:["مشروع فيه: app + tests + Docker + CI/CD + Terraform + K8s + security scans + monitoring","README إنجليزي فيه architecture diagram","CV محدّث بالمشاريع (من غير مبالغة)","LinkedIn محدّث + بوست يشرح المشروع"],
+   res:[{tag:"en",name:"DevOps Projects Ideas",url:"https://roadmap.sh/devops/projects"},{tag:"en",name:"GitHub Profile README",url:"https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme"}],
+   proj:"الـ Capstone: خد تطبيق وشغّل عليه كل حاجة اتعلمتها من automated tests لحد الـ monitoring. ده اللي هتتكلم عنه في كل interview."}
+ ]}
+];
+const READY=["CV محدّث بالإنجليزي، مبني على المشاريع من غير مبالغة","LinkedIn كامل: عنوان واضح، about، المشاريع، شغل الـ testing","GitHub profile فيه README وبينّور الريبوهات المهمة","3+ مشاريع موثقة بـ README كويس على GitHub","عملت mock interview / حليت أسئلة SDET و DevOps شائعة","قدّمت على وظايف SDET / QA Automation (مش مستني Junior DevOps)"];
+
+(function(){
+  const KEY="saad-roadmap-v3";
+  let S={done:{},notes:{},proj:{},ready:{},current:"",hpw:12,start:""};
+  try{ const r=JSON.parse(localStorage.getItem(KEY)); if(r) S=Object.assign(S,r); }catch(e){}
+  function persist(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function logoHTML(k){
+    if(k==='aws') return '<span class="logo aws" title="AWS">aws</span>';
+    const ic=ICONS[k]; if(!ic||!ic.d) return '';
+    return '<span class="logo" title="'+esc(ic.title)+'"><svg viewBox="0 0 24 24" fill="#'+ic.hex+'" role="img" aria-label="'+esc(ic.title)+'"><path d="'+ic.d+'"/></svg></span>';
+  }
+
+  const root=document.getElementById("phases");
+  let total=0;
+  DATA.forEach(function(ph){
+    const sec=document.createElement("section");
+    sec.className="phase reveal"+(ph.theme==="sec"?" sec-theme":ph.theme==="ai"?" ai-theme":"");
+    sec.id="phase-"+ph.id;
+    let topicsHtml="";
+    ph.topics.forEach(function(tp,ti){
+      const tkey=ph.id+"-"+ti;
+      let outs="";
+      tp.out.forEach(function(o,oi){
+        const id=ph.id+"-"+ti+"-"+oi; total++;
+        const done=!!S.done[id];
+        outs+='<label class="chk'+(done?" done":"")+'"><input type="checkbox" data-id="'+id+'"'+(done?" checked":"")+'> <span>'+o+'</span></label>';
+      });
+      let resHtml="";
+      tp.res.forEach(function(r){
+        const tags=r.tag.split(" ").map(function(t){ return '<span class="tag '+t+'">'+(t==="ar"?"عربي":t==="en"?"English":"مدفوع")+'</span>'; }).join(" ");
+        resHtml+='<li>'+tags+' <a href="'+r.url+'" target="_blank" rel="noopener">'+esc(r.name)+'</a></li>';
+      });
+      const logos=(tp.icons&&tp.icons.length)?'<div class="logos">'+tp.icons.map(logoHTML).join('')+'</div>':'';
+      const pv=S.proj[tkey]||"";
+      const repoLink=pv?'<a href="'+esc(pv)+'" target="_blank" rel="noopener">فتح ↗</a>':'';
+      const nv=S.notes[tkey]||"";
+      topicsHtml+=
+      '<div class="topic" id="topic-'+tkey+'" data-topic="'+tkey+'">'+
+        '<div class="thead"><div><h3>'+esc(tp.t)+'</h3><div class="time">'+esc(tp.time)+' · ~'+tp.hours+' ساعة</div></div></div>'+
+        logos+
+        '<p class="goal">'+esc(tp.goal)+'</p>'+
+        '<div class="outs">'+outs+'</div>'+
+        '<div class="res"><div class="res-title">المصادر</div><ul>'+resHtml+'</ul></div>'+
+        '<div class="proj"><b>مشروع التوبيك</b>'+esc(tp.proj)+
+          '<div class="repo"><input type="text" placeholder="الصق رابط الـ GitHub repo بعد ما تخلصه" data-proj="'+tkey+'" value="'+esc(pv)+'">'+repoLink+'</div>'+
+        '</div>'+
+        (tp.note?'<p class="note">⚠ '+esc(tp.note)+'</p>':'')+
+        '<details class="notes"><summary>ملاحظاتي</summary><textarea data-notes="'+tkey+'" placeholder="اكتب ملاحظاتك، روابط، أفكار... بتتحفظ تلقائياً">'+esc(nv)+'</textarea></details>'+
+      '</div>';
+    });
+    const trapsHtml=(ph.traps&&ph.traps.length)?'<div class="traps"><div class="th">⚠ فخاخ شائعة في المرحلة دي</div><ul>'+ph.traps.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>':'';
+    sec.innerHTML=
+      '<div class="phase-head"><span class="phase-num">'+ph.num+'</span><h2>'+esc(ph.title)+'</h2>'+
+        '<button class="here-btn" data-here="'+ph.id+'">📍 أنا هنا</button></div>'+
+      '<div class="phase-meta">'+esc(ph.meta)+'</div>'+
+      '<div class="pbar"><div class="bar"><span data-pbar="'+ph.id+'"></span></div><span class="pct" data-ppct="'+ph.id+'">0%</span></div>'+
+      '<div class="phase-why">'+esc(ph.why||"")+'</div>'+trapsHtml+topicsHtml;
+    root.appendChild(sec);
+  });
+  document.getElementById("totAll").textContent=total;
+
+  // readiness list
+  const rl=document.getElementById("readyList");
+  READY.forEach(function(txt,i){
+    const done=!!S.ready[i];
+    const l=document.createElement("label");
+    l.className=done?"done":"";
+    l.innerHTML='<input type="checkbox" data-ready="'+i+'"'+(done?" checked":"")+'> <span>'+esc(txt)+'</span>';
+    rl.appendChild(l);
+  });
+
+  function totalHours(){ let h=0; DATA.forEach(function(ph){ph.topics.forEach(function(t){h+=t.hours||0;});}); return h; }
+  function remainingHours(){
+    let rem=0;
+    DATA.forEach(function(ph){ ph.topics.forEach(function(tp,ti){
+      let a=tp.out.length,d=0;
+      tp.out.forEach(function(_,oi){ if(S.done[ph.id+"-"+ti+"-"+oi]) d++; });
+      rem += (tp.hours||0)*(a?(a-d)/a:0);
+    });});
+    return rem;
+  }
+  function fmtDate(dt){ return dt.toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}); }
+
+  function nextStep(){
+    for(let p=0;p<DATA.length;p++){ const ph=DATA[p];
+      for(let ti=0;ti<ph.topics.length;ti++){ const tp=ph.topics[ti];
+        for(let oi=0;oi<tp.out.length;oi++){ if(!S.done[ph.id+"-"+ti+"-"+oi]) return {ph:ph,ti:ti,oi:oi,skill:tp.out[oi],topic:tp.t}; }
+      }
+    }
+    return null;
+  }
+
+  function refresh(){
+    let doneAll=0;
+    DATA.forEach(function(ph){
+      let d=0,a=0;
+      ph.topics.forEach(function(tp,ti){ tp.out.forEach(function(_,oi){ a++; if(S.done[ph.id+"-"+ti+"-"+oi]) d++; }); });
+      doneAll+=d;
+      const pct=a?Math.round(d/a*100):0;
+      const bar=document.querySelector('[data-pbar="'+ph.id+'"]'); if(bar) bar.style.width=pct+"%";
+      const lbl=document.querySelector('[data-ppct="'+ph.id+'"]'); if(lbl) lbl.textContent=pct+"%";
+    });
+    const tpct=total?Math.round(doneAll/total*100):0;
+    document.getElementById("totDone").textContent=doneAll;
+    document.getElementById("totBar").style.width=tpct+"%";
+    document.getElementById("hdrPct").textContent=tpct+"%";
+    // topic alldone (for filter)
+    document.querySelectorAll('.topic').forEach(function(el){
+      const k=el.getAttribute('data-topic');
+      const inputs=el.querySelectorAll('.chk input'); let all=inputs.length>0;
+      inputs.forEach(function(i){ if(!i.checked) all=false; });
+      el.classList.toggle('alldone',all);
+    });
+    // next step
+    const ns=nextStep();
+    const nt=document.getElementById("nextTxt");
+    if(ns){ nt.textContent=ns.skill; nt.dataset.target="topic-"+ns.ph.id+"-"+ns.ti; }
+    else { nt.textContent="🎉 خلّصت كل المهارات!"; nt.dataset.target=""; }
+    // hours + finish date
+    const rem=Math.round(remainingHours());
+    const hpw=S.hpw||12;
+    const weeks=rem>0?Math.ceil(rem/hpw):0;
+    let txt="~"+rem+" ساعة باقية";
+    if(rem>0){
+      const base=S.start?new Date(S.start):new Date();
+      const fin=new Date(base.getTime()); fin.setDate(fin.getDate()+Math.round(weeks*7));
+      txt+=" · ~"+weeks+" أسبوع · تخلص "+fmtDate(fin);
+    } else { txt="🎉 خلصت!"; }
+    document.getElementById("hoursTxt").textContent=txt;
+  }
+
+  // init controls
+  document.getElementById("hpw").value=S.hpw||12;
+  if(S.start) document.getElementById("startDate").value=S.start;
+  else { const t=new Date().toISOString().slice(0,10); document.getElementById("startDate").value=t; S.start=t; }
+  document.querySelectorAll('[data-here="'+S.current+'"]').forEach(function(){});
+  if(S.current){ const el=document.getElementById("phase-"+S.current); if(el) el.classList.add("current"); }
+
+  // events
+  document.addEventListener("change",function(e){
+    const t=e.target;
+    if(t.matches('.chk input[type=checkbox]')){ const id=t.getAttribute("data-id"); if(t.checked)S.done[id]=1;else delete S.done[id]; t.closest("label").classList.toggle("done",t.checked); persist(); refresh(); }
+    else if(t.matches('[data-ready]')){ const i=t.getAttribute("data-ready"); if(t.checked)S.ready[i]=1;else delete S.ready[i]; t.closest("label").classList.toggle("done",t.checked); persist(); }
+    else if(t.id==="hpw"){ S.hpw=Math.max(1,parseInt(t.value)||12); persist(); refresh(); }
+    else if(t.id==="startDate"){ S.start=t.value; persist(); refresh(); }
+  });
+  document.addEventListener("input",function(e){
+    const t=e.target;
+    if(t.matches('[data-notes]')){ S.notes[t.getAttribute("data-notes")]=t.value; persist(); }
+    else if(t.matches('[data-proj]')){ S.proj[t.getAttribute("data-proj")]=t.value.trim(); persist(); }
+  });
+  document.addEventListener("click",function(e){
+    const h=e.target.closest('[data-here]');
+    if(h){ const id=h.getAttribute("data-here");
+      document.querySelectorAll('.phase').forEach(function(p){p.classList.remove("current");});
+      if(S.current===id){ S.current=""; } else { S.current=id; document.getElementById("phase-"+id).classList.add("current"); }
+      persist();
+    }
+    if(e.target.id==="nextBtn"){ const tg=document.getElementById("nextTxt").dataset.target; if(tg){ const el=document.getElementById(tg); if(el) el.scrollIntoView({behavior:"smooth",block:"center"}); } }
+    if(e.target.id==="continueBtn"){ const el=S.current?document.getElementById("phase-"+S.current):null; if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); else alert("حدد مكانك الأول: دوس 📍 أنا هنا جنب المرحلة اللي واقف فيها"); }
+    if(e.target.id==="filterBtn"){ document.body.classList.toggle("filter-left"); e.target.textContent=document.body.classList.contains("filter-left")?"👁 وريني الكل":"👁 وريني اللي فاضل بس"; }
+    if(e.target.id==="resetBtn"){ if(confirm("متأكد؟ ده هيمسح كل تقدّمك وملاحظاتك.")){ S={done:{},notes:{},proj:{},ready:{},current:"",hpw:S.hpw,start:S.start}; persist(); location.reload(); } }
+  });
+
+  // card cursor glow
+  root.addEventListener("pointermove",function(e){ const c=e.target.closest(".topic"); if(!c)return; const r=c.getBoundingClientRect(); c.style.setProperty("--mx",(e.clientX-r.left)+"px"); c.style.setProperty("--my",(e.clientY-r.top)+"px"); });
+  // reveal
+  const io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("vis"); io.unobserve(en.target); } }); },{threshold:.08});
+  document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+  // scroll progress
+  const prog=document.getElementById("progress");
+  function onScroll(){ const h=document.documentElement; const max=h.scrollHeight-h.clientHeight; prog.style.transform="scaleX("+(max>0?h.scrollTop/max:0)+")"; }
+  document.addEventListener("scroll",onScroll,{passive:true}); onScroll();
+
+  refresh();
+})();
+</script>
+</body>
+</html>
